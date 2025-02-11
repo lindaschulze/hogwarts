@@ -5,14 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sorting Hat</title>
     <link rel="stylesheet" href="styles.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+    <script defer src="script.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to the Sorting Hat</h1>
-        <p>Click below to find your Hogwarts house!</p>
-        <button id="sort-button">Sort Me!</button>
-        <h2 id="house-result"></h2>
+        <h1>Sorting Hat Ceremony</h1>
+        <video id="video" autoplay></video>
+        <canvas id="canvas"></canvas>
+        <img id="sorting-hat" src="sorting-hat.gif" alt="Sorting Hat">
+        <h2 id="house-result">Sorting in progress...</h2>
     </div>
-    <script src="script.js"></script>
 </body>
 </html>
