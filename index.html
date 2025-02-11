@@ -3,29 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera Test</title>
-    <style>
-        #video {
-            display: block;
-            margin: 0 auto;
-            width: 640px;
-            height: 480px;
-        }
-    </style>
+    <title>Sorting Hat</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <video id="video" autoplay></video>
-    <script>
-        const video = document.getElementById('video');
-
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                video.srcObject = stream;
-                console.log("Camera feed started.");
-            })
-            .catch(err => {
-                console.error("Error accessing the camera:", err);
-            });
-    </script>
+    <div class="container">
+        <h1>Welcome to the Sorting Hat</h1>
+        <p>Click below to find your Hogwarts house!</p>
+        <button id="sort-button">Sort Me!</button>
+        <h2 id="house-result"></h2>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
