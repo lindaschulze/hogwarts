@@ -4,16 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sorting Hat</title>
+    <style>
+        #sorting-hat {
+            position: absolute;
+            display: none;
+            z-index: 10;
+        }
+    </style>
 </head>
 <body>
     <video id="video" width="640" height="480" autoplay></video>
-    <img id="sorting-hat" src="sorting-hat.gif" style="position: absolute; display: none;">
+    <img id="sorting-hat" src="sorting-hat.gif">
     <div id="house-result"></div>
 
-    <!-- ✅ Correct face-api.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
-
-    <!-- Your script (must be AFTER face-api.js) -->
     <script src="script.js"></script>
 </body>
 </html>
