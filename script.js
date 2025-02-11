@@ -10,12 +10,12 @@ async function startVideo() {
     video.srcObject = stream;
 }
 
-// Load Face-api.js models
+// Load Face-api.js models from CDN
 async function loadModels() {
-    await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
-    await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
-    await faceapi.nets.faceExpressionNet.loadFromUri('/models');
-    await faceapi.nets.ageGenderNet.loadFromUri('/models');
+    await faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@latest/models');
+    await faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@latest/models');
+    await faceapi.nets.faceExpressionNet.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@latest/models');
+    await faceapi.nets.ageGenderNet.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js@latest/models');
 }
 
 // Start face detection
