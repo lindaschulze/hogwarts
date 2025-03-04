@@ -10,26 +10,27 @@ async function startCamera() {
 
 async function detectFace() {
     await faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js/weights');
+    
     const video = document.getElementById("video");
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
-    
+    const hatImg = new Image();
+    hatImg.src = "sorting-hat.gif";  // Uses your animated Sorting Hat
+
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
     setInterval(async () => {
         const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions());
+
         if (detections) {
             const x = detections.box.x;
-            const y = detections.box.y - 50;
+            const y = detections.box.y - 80; // Adjust to position above head
+            const width = detections.box.width;
+            const height = width * 1.2; // Keep proportions
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "brown";
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(x + 60, y + 50);
-            ctx.lineTo(x - 60, y + 50);
-            ctx.closePath();
-            ctx.fill();
+            ctx.drawImage(hatImg, x, y, width, height);
         }
     }, 100);
 }
@@ -37,14 +38,14 @@ async function detectFace() {
 function sortHouse() {
     const houses = ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"];
     const chosenHouse = houses[Math.floor(Math.random() * houses.length)];
+    
     document.getElementById("house").innerText = `Du bist in ${chosenHouse}!`;
 
+    // Sorting Hat speaks the assigned house
     const speech = new SpeechSynthesisUtterance(`You belong to ${chosenHouse}!`);
     speechSynthesis.speak(speech);
 }
 
 video.addEventListener("play", detectFace);
-
 setTimeout(sortHouse, 5000);
-
 startCamera();
