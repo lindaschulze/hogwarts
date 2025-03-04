@@ -10,12 +10,12 @@ async function startCamera() {
 
 async function detectFace() {
     await faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js/weights');
-    
+
     const video = document.getElementById("video");
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     const hatImg = new Image();
-    hatImg.src = "sorting-hat.gif";  // Uses your animated Sorting Hat
+    hatImg.src = "./sorting-hat.gif"; // Prüfe, ob die Datei existiert!
 
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
@@ -25,9 +25,9 @@ async function detectFace() {
 
         if (detections) {
             const x = detections.box.x;
-            const y = detections.box.y - 80; // Adjust to position above head
-            const width = detections.box.width;
-            const height = width * 1.2; // Keep proportions
+            const y = detections.box.y - 120; // Hut höher platzieren
+            const width = detections.box.width * 1.2;
+            const height = width * 1.2;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(hatImg, x, y, width, height);
@@ -41,11 +41,10 @@ function sortHouse() {
     
     document.getElementById("house").innerText = `Du bist in ${chosenHouse}!`;
 
-    // Sorting Hat speaks the assigned house
     const speech = new SpeechSynthesisUtterance(`You belong to ${chosenHouse}!`);
     speechSynthesis.speak(speech);
 }
 
-video.addEventListener("play", detectFace);
+document.getElementById("video").addEventListener("play", detectFace);
 setTimeout(sortHouse, 5000);
 startCamera();
