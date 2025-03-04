@@ -15,17 +15,18 @@ async function detectFace() {
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     const hatImg = new Image();
-    hatImg.src = "./sorting-hat.gif"; // Prüfe, ob die Datei existiert!
+    hatImg.src = "./sorting-hat.gif"; // Pfad überprüfen
 
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
     setInterval(async () => {
         const detections = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions());
+        console.log(detections);  // Überprüfen, ob das Gesicht erkannt wird
 
         if (detections) {
             const x = detections.box.x;
-            const y = detections.box.y - 120; // Hut höher platzieren
+            const y = detections.box.y - 120; // Hut höher setzen
             const width = detections.box.width * 1.2;
             const height = width * 1.2;
 
