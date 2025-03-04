@@ -1,23 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sorting Hat</title>
     <style>
-        #sorting-hat {
-            position: absolute;
-            display: none;
-            z-index: 10;
-        }
+        body { text-align: center; background: black; color: white; }
+        video { width: 100%; max-width: 600px; }
+        canvas { position: absolute; top: 0; left: 0; }
+        #house { font-size: 24px; margin-top: 10px; }
     </style>
 </head>
 <body>
-    <video id="video" width="640" height="480" autoplay></video>
-    <img id="sorting-hat" src="sorting-hat.gif">
-    <div id="house-result"></div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
+    <h1>Hogwarts Sorting Hat</h1>
+    <video id="video" autoplay></video>
+    <canvas id="canvas"></canvas>
+    <p id="house"></p>
     <script src="script.js"></script>
 </body>
 </html>
