@@ -3,19 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sorting Hat</title>
-    <style>
-        body { text-align: center; background: black; color: white; }
-        video { width: 100%; max-width: 600px; }
-        canvas { position: absolute; top: 0; left: 0; }
-        #house { font-size: 24px; margin-top: 10px; }
-    </style>
+    <title>Hogwarts Sorting Hat</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Hogwarts Sorting Hat</h1>
-    <video id="video" autoplay></video>
-    <canvas id="canvas"></canvas>
-    <p id="house"></p>
+    <h1>Der Sprechende Hut</h1>
+    <div class="container">
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas"></canvas>
+        <div id="house"></div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
