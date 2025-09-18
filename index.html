@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hogwarts Sorting Hat</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Der Sprechende Hogwarts-Hut</title>
+    <link rel="stylesheet" href="styles.css" />
     <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
-    <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
 </head>
 <body>
     <h1>Der Sprechende Hut</h1>
     <div class="container">
-        <video id="video" autoplay playsinline></video>
+        <video id="video" autoplay playsinline muted></video>
         <canvas id="canvas"></canvas>
-        <div id="house"></div>
     </div>
-    <script src="script.js"></script>
+    <div id="house"></div>
 </body>
 </html>
