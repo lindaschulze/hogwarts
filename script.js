@@ -1,87 +1,198 @@
+// Globale Variablen
+let video, canvas, ctx;
+let model;
+let hatImage;
+let isProcessing = false;
 let faceDetected = false;
-let hasSorted = false;
+let sortingTimer = null;
 
-async function startCamera() {
-    const video = document.getElementById("video");
+// Hogwarts Häuser
+const houses = [
+    { name: 'Gryffindor', class: 'gryffindor', text: 'Gryffindor! Tapferkeit und Mut!' },
+    { name: 'Hufflepuff', class: 'hufflepuff', text: 'Hufflepuff! Treue und Fleiß!' },
+    { name: 'Ravenclaw', class: 'ravenclaw', text: 'Ravenclaw! Weisheit und Klugheit!' },
+    { name: 'Slytherin', class: 'slytherin', text: 'Slytherin! Ehrgeiz und List!' }
+];
+
+// Initialisierung
+async function init() {
+    video = document.getElementById('video');
+    canvas = document.getElementById('overlay');
+    ctx = canvas.getContext('2d');
+    
+    updateStatus('Lade Gesichtserkennung...');
+    
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-        video.srcObject = stream;
-        video.onloadedmetadata = () => {
-            video.play();
-            setupCanvas();
-            detectFace();
-        };
+        // Lade das Gesichtserkennungsmodell
+        model = await blazeface.load();
+        updateStatus('Starte Kamera...');
+        
+        // Starte die Kamera
+        await startCamera();
+        
+        // Lade das Hut-GIF
+        await loadHatImage();
+        
+        updateStatus('Bereit! Schaue in die Kamera...');
+        
+        // Starte die Gesichtserkennung
+        detectFaces();
+        
     } catch (error) {
-        document.getElementById("house").innerText = "Kamera-Zugriff erforderlich!";
+        console.error('Fehler bei der Initialisierung:', error);
+        updateStatus('Fehler: ' + error.message);
     }
 }
 
-function setupCanvas() {
-    const video = document.getElementById("video");
-    const canvas = document.getElementById("canvas");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+// Kamera starten
+async function startCamera() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: 'user',
+                width: { ideal: 640 },
+                height: { ideal: 480 }
+            },
+            audio: false
+        });
+        
+        video.srcObject = stream;
+        
+        return new Promise((resolve) => {
+            video.onloadedmetadata = () => {
+                video.play();
+                // Canvas-Größe an Video anpassen
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                resolve();
+            };
+        });
+    } catch (error) {
+        throw new Error('Kamera-Zugriff verweigert. Bitte erlaube den Kamerazugriff.');
+    }
 }
 
-async function detectFace() {
-    await faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js/weights');
-    await faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/npm/face-api.js/weights');
-    const video = document.getElementById("video");
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-    const hatImg = new Image();
-    hatImg.src = "./sorting-hat.gif";
+// Hut-Bild laden
+function loadHatImage() {
+    return new Promise((resolve, reject) => {
+        hatImage = new Image();
+        hatImage.onload = () => resolve();
+        hatImage.onerror = () => reject(new Error('Hut-Bild konnte nicht geladen werden'));
+        hatImage.src = './sorting-hat.gif';
+    });
+}
 
-    setInterval(async () => {
-        if (video.readyState === 4 && video.videoWidth > 0 && video.videoHeight > 0) {
-            const detection = await faceapi.detectSingleFace(
-                video, new faceapi.TinyFaceDetectorOptions()
-            ).withFaceLandmarks();
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            if (detection) {
-                if (!faceDetected) {
-                    faceDetected = true;
-                    setTimeout(() => sortHouse(detection), 3000);
-                }
-                // Hut über Kopf positionieren
-                const { x, y, width, height } = detection.detection.box;
-                const hatWidth = width * 1.2;
-                const hatHeight = hatWidth * 0.9;
-                const hatX = x - (hatWidth - width) / 2;
-                const hatY = y - hatHeight * 0.75;
-                ctx.drawImage(hatImg, hatX, hatY, hatWidth, hatHeight);
+// Gesichtserkennung
+async function detectFaces() {
+    if (isProcessing) return;
+    
+    try {
+        isProcessing = true;
+        
+        // Erkenne Gesichter
+        const predictions = await model.estimateFaces(video, false);
+        
+        // Canvas leeren
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        if (predictions.length > 0) {
+            // Erstes Gesicht verwenden
+            const face = predictions[0];
+            
+            if (!faceDetected) {
+                faceDetected = true;
+                startSortingTimer();
+            }
+            
+            // Zeichne den Hut über dem Gesicht
+            drawHat(face);
+        } else {
+            // Kein Gesicht mehr erkannt
+            if (faceDetected && sortingTimer) {
+                clearTimeout(sortingTimer);
+                sortingTimer = null;
+                faceDetected = false;
             }
         }
-    }, 100);
+        
+        isProcessing = false;
+        
+        // Nächsten Frame verarbeiten
+        requestAnimationFrame(detectFaces);
+        
+    } catch (error) {
+        console.error('Fehler bei Gesichtserkennung:', error);
+        isProcessing = false;
+        requestAnimationFrame(detectFaces);
+    }
 }
 
-// Regeln für Hauswahl: Dummy-Logik; eigene Charakteristika können eingetragen werden
-function analyzePersonality(detection) {
-    // Gesichtsproportionen auslesen (Beispiel)
-    const landmarks = detection.landmarks.positions;
-    const { width, height } = detection.detection.box;
-    const faceRatio = height / width;
-    if (faceRatio > 1.3) return "Ravenclaw";
-    if (faceRatio < 1.1) return "Hufflepuff";
-    return ["Gryffindor","Slytherin"][Math.floor(Math.random()*2)];
+// Hut zeichnen
+function drawHat(face) {
+    // Gesichtsposition ermitteln
+    const start = face.topLeft;
+    const end = face.bottomRight;
+    const faceWidth = end[0] - start[0];
+    const faceHeight = end[1] - start[1];
+    
+    // Hut-Position und Größe berechnen
+    const hatWidth = faceWidth * 1.8;
+    const hatHeight = hatWidth * 1.2;
+    const hatX = start[0] - (hatWidth - faceWidth) / 2;
+    const hatY = start[1] - hatHeight * 0.85;
+    
+    // Hut zeichnen
+    ctx.drawImage(hatImage, hatX, hatY, hatWidth, hatHeight);
 }
 
-function sortHouse(detection) {
-    if (hasSorted) return;
-    hasSorted = true;
-    const house = analyzePersonality(detection);
-    document.getElementById("house").innerText = `Du gehörst zu ${house}!`;
-
-    // Deutsche Sprachausgabe
-    const speech = new SpeechSynthesisUtterance(
-        `Der Sprechende Hut sagt: Du gehörst zu ${house}!`
-    );
-    speech.lang = "de-DE";
-    speech.rate = 0.9;
-    speech.pitch = 0.7;
-    speechSynthesis.speak(speech);
+// Timer für Hauszuweisung
+function startSortingTimer() {
+    updateStatus('Hmm... lass mich nachdenken...');
+    
+    sortingTimer = setTimeout(() => {
+        sortIntoHouse();
+    }, 3000);
 }
 
-startCamera();
+// Hauszuweisung
+function sortIntoHouse() {
+    // Zufälliges Haus auswählen
+    const house = houses[Math.floor(Math.random() * houses.length)];
+    
+    // Ergebnis anzeigen
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = `<div class="house-result ${house.class}">${house.text}</div>`;
+    
+    updateStatus('Der Hut hat gesprochen!');
+    
+    // Sprachausgabe
+    speak(house.name);
+    
+    // Nach 5 Sekunden zurücksetzen
+    setTimeout(() => {
+        faceDetected = false;
+        sortingTimer = null;
+        resultDiv.innerHTML = '';
+        updateStatus('Bereit für die nächste Person...');
+    }, 8000);
+}
+
+// Sprachausgabe
+function speak(houseName) {
+    const utterance = new SpeechSynthesisUtterance();
+    utterance.text = `${houseName}!`;
+    utterance.lang = 'de-DE';
+    utterance.rate = 0.8;
+    utterance.pitch = 0.7;
+    utterance.volume = 1.0;
+    
+    speechSynthesis.speak(utterance);
+}
+
+// Status aktualisieren
+function updateStatus(message) {
+    document.getElementById('status').textContent = message;
+}
+
+// App starten
+window.addEventListener('load', init);
