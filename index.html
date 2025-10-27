@@ -1,19 +1,26 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Der Sprechende Hut</title>
-    <link rel="stylesheet" href="styles.css" />
-    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
-    <script defer src="script.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hogwarts Sorting Hat</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Der Sprechende Hut</h1>
+    <div class="header">
+        <h1>🎩 Der Sprechende Hut 🎩</h1>
+        <p id="status">Kamera wird geladen...</p>
+    </div>
+    
     <div class="container">
         <video id="video" autoplay playsinline muted></video>
-        <canvas id="canvas"></canvas>
+        <canvas id="overlay"></canvas>
     </div>
-    <div id="house"></div>
+    
+    <div id="result"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface@0.0.7"></script>
+    <script src="script.js"></script>
 </body>
 </html>
