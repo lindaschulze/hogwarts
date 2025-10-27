@@ -12,8 +12,8 @@ body {
 
 video {
     border: 2px solid white;
-    width: 100%;
-    max-width: 600px;
+    width: 100vw;
+    max-width: 400px;
     transform: scaleX(-1); /* Spiegel-Effekt */
 }
 
@@ -22,7 +22,10 @@ canvas {
     top: 0;
     left: 0;
     pointer-events: none;
-    transform: scaleX(-1); /* Canvas auch spiegeln */
+    width: 100vw;
+    max-width: 400px;
+    height: auto;
+    transform: scaleX(-1); /* Spiegel-Effekt für Overlay */
 }
 
 #house {
